@@ -46,17 +46,21 @@ function App() {
         <h1>EasyTable</h1>
         <p>Manager Login</p>
         <form onSubmit={handleLogin}>
-          <label>Email</label>
-          <input type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)} />
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)} />
+          <div className="input-group">
+            <label>Email</label>
+            <input type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)} />
+          </div>
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)} />
+          </div>
           <button type="submit">Login</button>
         </form>
 

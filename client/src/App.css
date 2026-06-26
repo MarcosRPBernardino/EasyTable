@@ -62,7 +62,13 @@ body {
 form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 label {
@@ -141,7 +147,7 @@ button:hover {
   }
 
   .login-card h1 {
-    font-size: 40px;
+    font-size: 36px;
   }
 
   input,
@@ -162,15 +168,16 @@ button:hover {
   }
 
   .login-card h1 {
-    font-size: 34px;
+    font-size: 32px;
   }
 
   .login-card p {
     font-size: 16px;
+    margin-bottom: 24px;
   }
 
   label {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   input,
