@@ -2,7 +2,6 @@ require("dotenv").config({
     path: require("path").join(__dirname, "../.env"),
 });
 
-console.log("EMAIL:", process.env.SEED_MANAGER_EMAIL);
 
 const bcrypt = require("bcrypt");
 const db = require("../db/database");
