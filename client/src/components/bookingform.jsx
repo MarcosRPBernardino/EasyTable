@@ -10,6 +10,10 @@ function BookingForm() {
         duration_minutes: "60",
         party_size: 1,
     });
+    const [availableTables, setAvailableTables] = useState([]);
+    const [selectTableId, setSelectTableId] = useState("");
+    const [message, setMesssage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -20,8 +24,12 @@ function BookingForm() {
         }));
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
+
+        setMesssage("");
+        setAvailableTables([]);
+        setSelectTableId("");
 
         if(!bookingData.start_time){
             return;
@@ -34,13 +42,35 @@ function BookingForm() {
             return;
         }
 
-        const searchParameters = {
+        const query = new URLSearchParams ({
             booking_date: bookingData.booking_date,
             start_time: bookingData.start_time,
             end_time: endTime,
-            party_size: Number(bookingData.party_size),
-        };
-        console.log(searchParameters);
+            party_size: String(bookingData.party_size),
+        });
+
+        try{
+            setIsLoading(true);
+
+            const response = await fetch(`http://localhost:3000/api/tables/available?${query.toString()}`);
+            const data = await response.json();
+
+            if(!response.ok){
+                setMesssage(data.message || "Unable to search available tables");
+                return;
+            }
+
+            setAvailableTables(data);
+
+            if(data.length === 0){
+                setMesssage("No tables are available for the selected time");
+            }
+        }catch(error){
+            console.error(error);
+            setMesssage("Unable to connect to the server");
+        }finally{
+            setIsLoading(false);
+        }
     }
 
     function calculateEndTime(startTime, durationMinutes) {
@@ -102,7 +132,7 @@ function BookingForm() {
                         </select>
                     </div>
                 </div>
-                <button type="submit">Search available tables</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? "Searching..." : "Search available tables"}</button>
             </form>
         </section>
     );

@@ -173,6 +173,19 @@ button:hover {
   font-size: 14px;
 }
 
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.logout-button {
+  width: auto;
+  margin-top: 0;
+  padding: 10px 16px;
+}
+
 @media (max-width: 768px) {
   .app {
     padding: 16px;
