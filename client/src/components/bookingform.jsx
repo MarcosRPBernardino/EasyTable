@@ -7,7 +7,7 @@ function BookingForm() {
         customer_phone: "",
         booking_date: "",
         start_time: "",
-        end_time: "",
+        duration_minutes: "60",
         party_size: 1,
     });
 
@@ -23,8 +23,38 @@ function BookingForm() {
     function handleSubmit(event) {
         event.preventDefault();
 
-        console.log(bookingData);
+        if(!bookingData.start_time){
+            return;
+        }
 
+        const endTime = calculateEndTime(bookingData.start_time, bookingData.duration_minutes);
+
+        if(!endTime){
+            console.log("Booking must end on same day");
+            return;
+        }
+
+        const searchParameters = {
+            booking_date: bookingData.booking_date,
+            start_time: bookingData.start_time,
+            end_time: endTime,
+            party_size: Number(bookingData.party_size),
+        };
+        console.log(searchParameters);
+    }
+
+    function calculateEndTime(startTime, durationMinutes) {
+        const [hours, minutes] = startTime.split(":").map(Number);
+        const totalMinutes = hours * 60 + minutes + Number(durationMinutes);
+
+        if(totalMinutes >= 24 * 60){
+            return null;
+        }
+
+        const endHours = Math.floor(totalMinutes / 60);
+        const endMinutes = totalMinutes % 60;
+
+        return `${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}`;
     }
 
     return (
@@ -63,8 +93,13 @@ function BookingForm() {
                         <input id="start_time" name="start_time" type="time" value={bookingData.start_time} onChange={handleChange} required />
                     </div>
                     <div className="input-group">
-                        <label htmlFor="end_time">End Time</label>
-                        <input id="end_time" name="end_time" type="time" value={bookingData.end_time} onChange={handleChange} required />
+                        <label htmlFor="duration_minutes">Duration</label>
+                        <select id="duration_minutes" name="duration_minutes" value={bookingData.duration_minutes} onChange={handleChange} required>
+                            <option value="30">30 minutes</option>
+                            <option value="60">1 hour</option>
+                            <option value="90">1 hour 30 minutes</option>
+                            <option value="120">2 hours</option>
+                        </select>
                     </div>
                 </div>
                 <button type="submit">Search available tables</button>
