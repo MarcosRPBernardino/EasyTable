@@ -426,70 +426,70 @@ function BookingForm() {
                 </section>
             )}
             {currentStep === "success" && bookingCreated && (
-    <section className="booking-success">
-        <p className="booking-label">Booking submitted</p>
+                <section className="booking-success">
+                    <p className="booking-label">Booking submitted</p>
 
-        <h1>Reservation request received</h1>
+                    <h1>Reservation request received</h1>
 
-        <p>
-            Thank you, {bookingCreated.customer_name}. Your booking
-            request has been created successfully.
-        </p>
+                    <p>
+                        Thank you, {bookingCreated.customer_name}. Your booking
+                        request has been created successfully.
+                    </p>
 
-        <div className="booking-summary">
-            <div>
-                <span>Date</span>
-                <strong>{bookingCreated.booking_date}</strong>
-            </div>
+                    <div className="booking-summary">
+                        <div>
+                            <span>Date</span>
+                            <strong>{bookingCreated.booking_date}</strong>
+                        </div>
 
-            <div>
-                <span>Time</span>
-                <strong>
-                    {bookingCreated.start_time} –{" "}
-                    {bookingCreated.end_time}
-                </strong>
-            </div>
+                        <div>
+                            <span>Time</span>
+                            <strong>
+                                {bookingCreated.start_time} –{" "}
+                                {bookingCreated.end_time}
+                            </strong>
+                        </div>
 
-            <div>
-                <span>Guests</span>
-                <strong>{bookingCreated.party_size}</strong>
-            </div>
+                        <div>
+                            <span>Guests</span>
+                            <strong>{bookingCreated.party_size}</strong>
+                        </div>
 
-            <div>
-                <span>Status</span>
-                <strong>{bookingCreated.booking_status}</strong>
-            </div>
-        </div>
+                        <div>
+                            <span>Status</span>
+                            <strong>{bookingCreated.booking_status}</strong>
+                        </div>
+                    </div>
 
-        <p className="success-note">
-            A confirmation email will be sent after the manager
-            reviews your request.
-        </p>
+                    <p className="success-note">
+                        A confirmation email will be sent after the manager
+                        reviews your request.
+                    </p>
 
-        <button
-            type="button"
-            onClick={() => {
-                setBookingData({
-                    customer_name: "",
-                    customer_email: "",
-                    customer_phone: "",
-                    booking_date: "",
-                    start_time: "",
-                    duration_minutes: "60",
-                    party_size: 1,
-                });
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setBookingData({
+                                customer_name: "",
+                                customer_email: "",
+                                customer_phone: "",
+                                booking_date: "",
+                                start_time: "",
+                                duration_minutes: "60",
+                                party_size: 1,
+                            });
 
-                setAvailableTables([]);
-                setSelectedTableId("");
-                setBookingCreated(null);
-                setMessage("");
-                setCurrentStep("search");
-            }}
-        >
-            Make another booking
-        </button>
-    </section>
-)}
+                            setAvailableTables([]);
+                            setSelectedTableId("");
+                            setBookingCreated(null);
+                            setMessage("");
+                            setCurrentStep("search");
+                        }}
+                    >
+                        Make another booking
+                    </button>
+                </section>
+            )}
         </section>
     );
 }

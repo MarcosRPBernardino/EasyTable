@@ -40,8 +40,6 @@ body {
   min-height: 100vh;
 }
 
-/* General layout */
-
 .app {
   min-height: 100vh;
   display: flex;
@@ -49,8 +47,6 @@ body {
   justify-content: center;
   padding: 24px;
 }
-
-/* Shared form styles */
 
 form {
   display: flex;
@@ -139,8 +135,6 @@ button:disabled {
   color: var(--primary-green);
 }
 
-/* Manager login */
-
 .login-card {
   width: 100%;
   max-width: 440px;
@@ -179,8 +173,6 @@ button:disabled {
   margin-top: 32px;
   color: var(--primary-blue);
 }
-
-/* Manager dashboard */
 
 .dashboard-header {
   display: flex;
@@ -230,19 +222,14 @@ button:disabled {
   text-align: right;
 }
 
-/* Public booking */
-
 .booking-card {
   width: 100%;
   max-width: 620px;
-
+  margin: 0 auto;
   padding: 40px;
-
   background: var(--card-color);
-
   border: 1px solid var(--border-color);
   border-radius: 24px;
-
   box-shadow: 0 24px 70px var(--card-shadow);
 }
 
@@ -281,8 +268,6 @@ button:disabled {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-
-/* Available tables */
 
 .available-tables {
   width: 100%;
@@ -438,7 +423,46 @@ button:disabled {
   font-size: 14px;
 }
 
-/* Responsive */
+.public-page {
+  width: 100%;
+}
+
+.public-header {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.public-header strong {
+  color: var(--primary-blue);
+  font-size: 22px;
+}
+
+.manager-login-link {
+  padding: 10px 14px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.manager-login-link:hover {
+  background: var(--success-bg);
+  color: var(--primary-green);
+  border-color: var(--primary-green);
+}
 
 @media (max-width: 768px) {
   .app {
