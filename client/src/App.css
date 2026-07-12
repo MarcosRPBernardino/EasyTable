@@ -394,6 +394,50 @@ button:disabled {
   margin-top: 20px;
 }
 
+.booking-success h1 {
+  margin: 4px 0 12px;
+  color: var(--primary-blue);
+}
+
+.booking-success>p {
+  color: var(--text-secondary);
+}
+
+.booking-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  margin-top: 28px;
+}
+
+.booking-summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 16px;
+
+  border: 1px solid var(--success-border);
+  border-radius: 14px;
+
+  background: var(--success-bg);
+}
+
+.booking-summary span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.booking-summary strong {
+  color: var(--primary-green);
+}
+
+.success-note {
+  margin-top: 24px;
+  font-size: 14px;
+}
+
 /* Responsive */
 
 @media (max-width: 768px) {
@@ -437,6 +481,10 @@ button:disabled {
   }
 
   .booking-row {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-summary {
     grid-template-columns: 1fr;
   }
 

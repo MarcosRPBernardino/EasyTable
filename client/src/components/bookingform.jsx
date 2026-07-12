@@ -16,6 +16,8 @@ function BookingForm() {
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState("search");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [bookingCreated, setBookingCreated] = useState(null);
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -110,6 +112,61 @@ function BookingForm() {
             setMessage("Unable to connect to the server");
         } finally {
             setIsLoading(false);
+        }
+    }
+
+    async function handleCreateBooking() {
+        const endTime = calculateEndTime(
+            bookingData.start_time,
+            bookingData.duration_minutes
+        );
+
+        if (!endTime || !selectedTableId) {
+            return;
+        }
+
+        const payload = {
+            customer_name: bookingData.customer_name,
+            customer_email: bookingData.customer_email,
+            customer_phone: bookingData.customer_phone,
+            booking_date: bookingData.booking_date,
+            start_time: bookingData.start_time,
+            end_time: endTime,
+            party_size: Number(bookingData.party_size),
+            table_id: Number(selectedTableId),
+        };
+
+        try {
+            setIsSubmitting(true);
+            setMessage("");
+
+            const response = await fetch(
+                "http://localhost:3000/api/bookings",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setMessage(
+                    data.message || "Unable to create booking"
+                );
+                return;
+            }
+
+            setBookingCreated(data.booking);
+            setCurrentStep("success");
+        } catch (error) {
+            console.error(error);
+            setMessage("Unable to connect to the server");
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -319,9 +376,9 @@ function BookingForm() {
                         {availableTables.map((table) => (
                             <label
                                 className={`available-table-option ${Number(selectedTableId) ===
-                                        table.id
-                                        ? "selected"
-                                        : ""
+                                    table.id
+                                    ? "selected"
+                                    : ""
                                     }`}
                                 key={table.id}
                             >
@@ -362,11 +419,77 @@ function BookingForm() {
                         type="button"
                         className="continue-button"
                         disabled={!selectedTableId}
+                        onClick={handleCreateBooking}
                     >
-                        Continue
+                        {isSubmitting ? "Creating booking..." : "Continue"}
                     </button>
                 </section>
             )}
+            {currentStep === "success" && bookingCreated && (
+    <section className="booking-success">
+        <p className="booking-label">Booking submitted</p>
+
+        <h1>Reservation request received</h1>
+
+        <p>
+            Thank you, {bookingCreated.customer_name}. Your booking
+            request has been created successfully.
+        </p>
+
+        <div className="booking-summary">
+            <div>
+                <span>Date</span>
+                <strong>{bookingCreated.booking_date}</strong>
+            </div>
+
+            <div>
+                <span>Time</span>
+                <strong>
+                    {bookingCreated.start_time} –{" "}
+                    {bookingCreated.end_time}
+                </strong>
+            </div>
+
+            <div>
+                <span>Guests</span>
+                <strong>{bookingCreated.party_size}</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong>{bookingCreated.booking_status}</strong>
+            </div>
+        </div>
+
+        <p className="success-note">
+            A confirmation email will be sent after the manager
+            reviews your request.
+        </p>
+
+        <button
+            type="button"
+            onClick={() => {
+                setBookingData({
+                    customer_name: "",
+                    customer_email: "",
+                    customer_phone: "",
+                    booking_date: "",
+                    start_time: "",
+                    duration_minutes: "60",
+                    party_size: 1,
+                });
+
+                setAvailableTables([]);
+                setSelectedTableId("");
+                setBookingCreated(null);
+                setMessage("");
+                setCurrentStep("search");
+            }}
+        >
+            Make another booking
+        </button>
+    </section>
+)}
         </section>
     );
 }
