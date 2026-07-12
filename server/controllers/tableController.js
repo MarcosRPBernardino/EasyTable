@@ -1,7 +1,7 @@
-const {dbAll, dbGet, dbRun} = require("../db/sqliteHelpers");
+const { dbAll, dbGet, dbRun } = require("../db/sqliteHelpers");
 
 async function getTables(req, res) {
-    try{
+    try {
         const tables = await dbAll(
             `SELECT id, table_number, capacity, table_location, is_active
             FROM restaurant_tables
@@ -9,23 +9,23 @@ async function getTables(req, res) {
             ORDER BY id ASC`
         );
         return res.status(200).json(tables);
-    } catch(error){
+    } catch (error) {
         console.error(error);
-        return res.status(500).json({message: "Database error"});
+        return res.status(500).json({ message: "Database error" });
     }
 }
 
 async function createTable(req, res) {
-    const {table_number, capacity, table_location} = req.body;
+    const { table_number, capacity, table_location } = req.body;
     const tableCapacity = Number(capacity);
 
-    if(!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0){
+    if (!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0) {
         return res.status(400).json({
             message: "Table number and capacity are required",
         });
     }
 
-    try{
+    try {
         const result = await dbRun(
             `INSERT INTO restaurant_tables (table_number, capacity, table_location)
             VALUES (?, ?, ?)`,
@@ -43,26 +43,26 @@ async function createTable(req, res) {
             message: "Table created successfully",
             table: newTable,
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return res.status(500).json({
-            message:"Unable to create table",
+            message: "Unable to create table",
         });
     }
 }
 
 async function updateTable(req, res) {
-    const {id} = req.params;
-    const {table_number, capacity, table_location} = req.body;
+    const { id } = req.params;
+    const { table_number, capacity, table_location } = req.body;
     const tableCapacity = Number(capacity);
 
-    if(!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0){
+    if (!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0) {
         return res.status(400).json({
             message: "Table number and capacity required",
         });
     }
 
-    try{
+    try {
         const result = await dbRun(
             `UPDATE restaurant_tables
             SET table_number = ?, capacity = ?, table_location = ?
@@ -70,7 +70,7 @@ async function updateTable(req, res) {
             [table_number, tableCapacity, table_location || null, id]
         );
 
-        if(result.changes === 0){
+        if (result.changes === 0) {
             return res.status(404).json({
                 message: "Table not found",
             });
@@ -87,7 +87,7 @@ async function updateTable(req, res) {
             message: "Table updated successfully",
             table: updatedTable,
         });
-    }catch (error){
+    } catch (error) {
         console.error(error);
         return res.status(500).json({
             message: "Unable to update table",
@@ -96,9 +96,9 @@ async function updateTable(req, res) {
 }
 
 async function deleteTable(req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
 
-    try{
+    try {
         const result = await dbRun(
             `UPDATE restaurant_tables
             SET is_active = 0
@@ -106,7 +106,7 @@ async function deleteTable(req, res) {
             [id]
         );
 
-        if(result.changes === 0){
+        if (result.changes === 0) {
             return res.status(404).json({
                 message: "Table not found",
             });
@@ -114,7 +114,7 @@ async function deleteTable(req, res) {
         return res.status(200).json({
             message: "Table deactivated successfully"
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return res.status(500).json({
             message: "Unable to deactivate table",
@@ -123,22 +123,33 @@ async function deleteTable(req, res) {
 }
 
 async function getAvailableTables(req, res) {
-    const {booking_date, start_time, end_time, party_size,} = req.query;
+    const { booking_date, start_time, end_time, party_size, } = req.query;
     const bookingPartySize = Number(party_size);
 
-    if(!booking_date || !start_time || !end_time || Number.isNaN(bookingPartySize) || bookingPartySize <= 0){
+    if (!booking_date || !start_time || !end_time || Number.isNaN(bookingPartySize) || bookingPartySize <= 0) {
         return res.status(400).json({
             message: "Missing or invalid search parameters"
         });
     }
 
-    if(start_time >= end_time){
+    if (start_time >= end_time) {
         return res.status(400).json({
-            message:"End time must be later than start time",
+            message: "End time must be later than start time",
         });
     }
 
-    try{
+    const today = new Date();
+    const selectedDate = new Date(`${booking_date}T00:00:00`);
+
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+        return res.status(400).json({
+            message: "Booking date cannot be in the past",
+        });
+    }
+
+    try {
         const availableTables = await dbAll(
             `
             SELECT restaurant_tables.id, restaurant_tables.table_number, restaurant_tables.capacity, restaurant_tables.table_location
@@ -159,7 +170,7 @@ async function getAvailableTables(req, res) {
             [bookingPartySize, booking_date, end_time, start_time,]
         );
         return res.status(200).json(availableTables);
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return res.status(500).json({
             message: "Unable to load available tables"

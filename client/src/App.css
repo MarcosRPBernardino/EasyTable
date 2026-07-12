@@ -5,29 +5,42 @@
 :root {
   --bg-color: #f7f8f5;
   --card-color: #ffffff;
+
   --text-primary: #172033;
   --text-secondary: #6b7280;
+
   --primary-blue: #1e3a5f;
   --primary-green: #315b4c;
   --accent-gold: #c89b3c;
+
   --border-color: #e5e7eb;
+
   --success-bg: rgba(49, 91, 76, 0.08);
   --success-border: rgba(49, 91, 76, 0.16);
+
   --card-shadow: rgba(23, 32, 51, 0.12);
 }
 
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: radial-gradient(circle at top left,
+  color: var(--text-primary);
+
+  background:
+    radial-gradient(circle at top left,
       rgba(200, 155, 60, 0.12),
       transparent 30%),
     radial-gradient(circle at bottom right,
       rgba(49, 91, 76, 0.14),
       transparent 35%),
     var(--bg-color);
-  color: var(--text-primary);
 }
+
+#root {
+  min-height: 100vh;
+}
+
+/* General layout */
 
 .app {
   min-height: 100vh;
@@ -37,32 +50,7 @@ body {
   padding: 24px;
 }
 
-.login-card {
-  width: 100%;
-  max-width: 440px;
-  background: var(--card-color);
-  padding: 40px;
-  border: 1px solid var(--border-color);
-  border-radius: 24px;
-  box-shadow: 0 24px 70px var(--card-shadow);
-  transition: max-width 0.3s ease;
-}
-
-.login-card.dashboard-mode {
-  max-width: 600px; /* Dá mais espaço para ler as colunas de mesas confortavelmente */
-}
-
-.login-card h1 {
-  margin: 0;
-  font-size: 38px;
-  letter-spacing: -1px;
-  color: var(--primary-blue);
-}
-
-.login-card p {
-  margin: 8px 0 32px;
-  color: var(--text-secondary);
-}
+/* Shared form styles */
 
 form {
   display: flex;
@@ -82,19 +70,29 @@ label {
   color: var(--text-primary);
 }
 
-input {
+input,
+select {
   width: 100%;
   padding: 14px 16px;
+
   border: 1px solid var(--border-color);
   border-radius: 14px;
+
+  font-family: inherit;
   font-size: 16px;
+
   background: #fbfbfa;
   color: var(--text-primary);
+
   outline: none;
-  transition: all 0.2s ease;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
-input:focus {
+input:not([type="radio"]):focus,
+select:focus {
   border-color: var(--accent-gold);
   box-shadow: 0 0 0 4px rgba(200, 155, 60, 0.15);
 }
@@ -102,76 +100,87 @@ input:focus {
 button {
   margin-top: 12px;
   padding: 14px;
+
   border: none;
   border-radius: 14px;
-  background: var(--primary-blue);
-  color: white;
+
+  font-family: inherit;
   font-size: 16px;
   font-weight: 600;
+
+  background: var(--primary-blue);
+  color: #ffffff;
+
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: var(--primary-green);
 }
 
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .message {
-  margin-top: 20px;
+  margin: 20px 0 0;
   text-align: center;
   font-weight: 600;
   color: var(--primary-green);
 }
 
-.manager-box {
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 16px;
-  background: var(--success-bg);
-  border: 1px solid var(--success-border);
-  text-align: center;
+/* Manager login */
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+
+  padding: 40px;
+
+  background: var(--card-color);
+
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+
+  box-shadow: 0 24px 70px var(--card-shadow);
+
+  transition: max-width 0.3s ease;
 }
 
-.manager-box strong {
-  color: var(--primary-green);
+.login-card.dashboard-mode {
+  max-width: 600px;
 }
 
-.manager-box span {
+.login-card h1 {
+  margin: 0;
+
+  font-size: 38px;
+  letter-spacing: -1px;
+
+  color: var(--primary-blue);
+}
+
+.login-card>p {
+  margin: 8px 0 32px;
   color: var(--text-secondary);
 }
 
-.login-card h2{
+.login-card h2 {
   margin-top: 32px;
   color: var(--primary-blue);
 }
 
-.table-list{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.table-card{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  background: #fbfbfa;
-}
-
-.table-card div {
-  display: flex;
-  gap: 16px;
-}
-
-.table-card span{
-  color: var(--text-secondary);
-  font-size: 14px;
-}
+/* Manager dashboard */
 
 .dashboard-header {
   display: flex;
@@ -186,57 +195,286 @@ button:hover {
   padding: 10px 16px;
 }
 
+.table-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-top: 16px;
+}
+
+.table-card {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(130px, 1fr);
+  align-items: center;
+  gap: 20px;
+
+  padding: 14px 16px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+
+  background: #fbfbfa;
+}
+
+.table-card strong {
+  color: var(--primary-blue);
+}
+
+.table-card span {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.table-card span:last-child {
+  text-align: right;
+}
+
+/* Public booking */
+
+.booking-card {
+  width: 100%;
+  max-width: 620px;
+
+  padding: 40px;
+
+  background: var(--card-color);
+
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+
+  box-shadow: 0 24px 70px var(--card-shadow);
+}
+
+.booking-header {
+  margin-bottom: 28px;
+}
+
+.booking-header h1 {
+  margin: 4px 0 8px;
+
+  font-size: 38px;
+  letter-spacing: -1px;
+
+  color: var(--primary-blue);
+}
+
+.booking-header>p:last-child {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.booking-label {
+  margin: 0;
+
+  color: var(--accent-gold);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.booking-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Available tables */
+
+.available-tables {
+  width: 100%;
+}
+
+.available-table-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.available-table-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  padding: 16px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.available-table-option:hover {
+  border-color: var(--primary-green);
+  background: var(--success-bg);
+}
+
+.available-table-option.selected {
+  border-color: var(--primary-green);
+  background: var(--success-bg);
+}
+
+.available-table-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  box-shadow: none;
+  background: transparent;
+
+  flex-shrink: 0;
+  accent-color: var(--primary-green);
+
+  transition: none;
+}
+
+.available-table-option input[type="radio"]:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.available-table-details {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(150px, 1fr);
+  align-items: center;
+  gap: 20px;
+
+  width: 100%;
+}
+
+.available-table-details strong {
+  color: var(--primary-blue);
+}
+
+.available-table-details span {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.available-table-details span:last-child {
+  text-align: right;
+}
+
+.back-button {
+  width: auto;
+
+  margin: 0 0 20px;
+  padding: 9px 13px;
+
+  border: 1px solid var(--border-color);
+
+  background: transparent;
+  color: var(--primary-blue);
+}
+
+.back-button:hover:not(:disabled) {
+  background: var(--success-bg);
+  color: var(--primary-green);
+}
+
+.continue-button {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Responsive */
+
 @media (max-width: 768px) {
   .app {
     padding: 16px;
   }
 
-  .login-card {
+  .login-card,
+  .booking-card {
     max-width: 100%;
     padding: 32px 24px;
     border-radius: 22px;
   }
 
-  .login-card h1 {
+  .login-card h1,
+  .booking-header h1 {
     font-size: 36px;
   }
 
-  input,
-  button {
-    font-size: 16px;
+  .available-table-details {
+    grid-template-columns: minmax(100px, 1fr) auto minmax(110px, 1fr);
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .app {
     align-items: flex-start;
-    padding-top: 48px;
+    padding-top: 32px;
   }
 
-  .login-card {
+  .login-card,
+  .booking-card {
     padding: 28px 20px;
     border-radius: 20px;
   }
 
-  .login-card h1 {
+  .login-card h1,
+  .booking-header h1 {
     font-size: 32px;
   }
 
-  .login-card p {
-    font-size: 16px;
-    margin-bottom: 24px;
+  .booking-row {
+    grid-template-columns: 1fr;
   }
 
-  label {
-    font-size: 14px;
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .logout-button {
+    width: 100%;
+  }
+
+  .table-card {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .table-card span:last-child {
+    text-align: left;
+  }
+
+  .available-table-option {
+    align-items: flex-start;
+  }
+
+  .available-table-details {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .available-table-details span:last-child {
+    text-align: left;
   }
 
   input,
+  select,
   button {
     min-height: 52px;
-  }
-
-  .manager-box {
-    font-size: 15px;
   }
 }

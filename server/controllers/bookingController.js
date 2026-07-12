@@ -1,15 +1,24 @@
 const { dbAll, dbGet, dbRun } = require("../db/sqliteHelpers");
 
-function timeToMinutes(time){
+function timeToMinutes(time) {
     const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
-    if(!timePattern.test(time)){
+    if (!timePattern.test(time)) {
         return null;
     }
 
     const [hours, minutes] = time.split(":").map(Number);
 
     return hours * 60 + minutes;
+}
+
+function isPastDate(date) {
+    const today = new Date();
+    const selectedDate = new Date(`${date}T00:00:00`);
+
+    today.setHours(0, 0, 0, 0);
+
+    return selectedDate < today;
 }
 
 async function getBookings(req, res) {
@@ -65,18 +74,18 @@ async function createBooking(req, res) {
     const startMinutes = timeToMinutes(start_time);
     const endMinutes = timeToMinutes(end_time);
 
-    if(startMinutes === null || endMinutes === null){
+    if (startMinutes === null || endMinutes === null) {
         return res.status(400).json({
-            message:"Start time and end time must use HH:MM format",
+            message: "Start time and end time must use HH:MM format",
         });
     }
 
     const bookingDuration = endMinutes - startMinutes;
-    const allowedDurations = [30,60, 90, 120];
+    const allowedDurations = [30, 60, 90, 120];
 
-    if(!allowedDurations.includes(bookingDuration)){
+    if (!allowedDurations.includes(bookingDuration)) {
         return res.status(400).json({
-            message:"Booking duration must be 30, 60, 90 or 120 minutes"
+            message: "Booking duration must be 30, 60, 90 or 120 minutes"
         });
     }
 
@@ -97,6 +106,12 @@ async function createBooking(req, res) {
         if (bookingPartySize > table.capacity) {
             return res.status(400).json({
                 message: "Party size exceeds selected table capacity",
+            });
+        }
+
+        if (isPastDate(booking_date)) {
+            return res.status(400).json({
+                message: "Booking date cannot be in the past",
             });
         }
 
