@@ -173,7 +173,128 @@ async function createBooking(req, res) {
     }
 }
 
+async function updateBookingStatus(req, res) {
+    const { id } = req.params;
+    const { booking_status } = req.body;
+
+    const allowedStatuses = [
+        "confirmed",
+        "rejected",
+        "cancelled",
+    ];
+
+    if (!allowedStatuses.includes(booking_status)) {
+        return res.status(400).json({
+            message: "Invalid booking status",
+        });
+    }
+
+    try {
+        const result = await dbRun(
+            `
+            UPDATE bookings
+            SET booking_status = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            `,
+            [booking_status, id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                message: "Booking not found",
+            });
+        }
+
+        const updatedBooking = await dbGet(
+            `
+            SELECT *
+            FROM bookings
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        return res.status(200).json({
+            message: "Booking status updated successfully",
+            booking: updatedBooking,
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Unable to update booking status",
+        });
+    }
+}
+
+async function deleteBooking(req, res) {
+    const { id } = req.params;
+
+    try {
+        const booking = await dbGet(
+            `
+            SELECT id, booking_date, booking_status
+            FROM bookings
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (!booking) {
+            return res.status(404).json({
+                message: "Booking not found",
+            });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const bookingDate = new Date(
+            `${booking.booking_date}T00:00:00`
+        );
+
+        const canDelete =
+            booking.booking_status === "rejected" ||
+            booking.booking_status === "cancelled" ||
+            bookingDate < today;
+
+        if (!canDelete) {
+            return res.status(400).json({
+                message:
+                    "Only rejected, cancelled or past bookings can be deleted",
+            });
+        }
+
+        const result = await dbRun(
+            `
+            DELETE FROM bookings
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                message: "Booking not found",
+            });
+        }
+
+        return res.status(200).json({
+            message: "Booking deleted successfully",
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Unable to delete booking",
+        });
+    }
+}
+
 module.exports = {
     getBookings,
     createBooking,
+    updateBookingStatus,
+    deleteBooking,
 };
