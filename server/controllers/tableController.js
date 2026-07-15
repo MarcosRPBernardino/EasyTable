@@ -1,5 +1,12 @@
 const { dbAll, dbGet, dbRun } = require("../db/sqliteHelpers");
 
+function formatTableNumber(tableNumber) {
+    const trimmedValue = String(tableNumber).trim();
+    const numberOnly = trimmedValue.replace(/^table\s*/i, "");
+
+    return `Table ${numberOnly}`;
+}
+
 async function getTables(req, res) {
     try {
         const tables = await dbAll(
@@ -17,6 +24,7 @@ async function getTables(req, res) {
 
 async function createTable(req, res) {
     const { table_number, capacity, table_location } = req.body;
+    const formattedTableNumber = formatTableNumber(table_number);
     const tableCapacity = Number(capacity);
 
     if (!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0) {
@@ -29,7 +37,7 @@ async function createTable(req, res) {
         const result = await dbRun(
             `INSERT INTO restaurant_tables (table_number, capacity, table_location)
             VALUES (?, ?, ?)`,
-            [table_number, tableCapacity, table_location || null]
+            [formattedTableNumber, tableCapacity, table_location || null]
         );
 
         const newTable = await dbGet(
@@ -54,6 +62,7 @@ async function createTable(req, res) {
 async function updateTable(req, res) {
     const { id } = req.params;
     const { table_number, capacity, table_location } = req.body;
+    const formattedTableNumber = formatTableNumber(table_number);
     const tableCapacity = Number(capacity);
 
     if (!table_number || Number.isNaN(tableCapacity) || tableCapacity <= 0) {
@@ -67,7 +76,7 @@ async function updateTable(req, res) {
             `UPDATE restaurant_tables
             SET table_number = ?, capacity = ?, table_location = ?
             WHERE id = ?`,
-            [table_number, tableCapacity, table_location || null, id]
+            [formattedTableNumber, tableCapacity, table_location || null, id]
         );
 
         if (result.changes === 0) {
@@ -118,6 +127,78 @@ async function deleteTable(req, res) {
         console.error(error);
         return res.status(500).json({
             message: "Unable to deactivate table",
+        });
+    }
+}
+
+async function getInactiveTables(req, res) {
+    try {
+        const tables = await dbAll(
+            `
+            SELECT
+                id,
+                table_number,
+                capacity,
+                table_location,
+                is_active
+            FROM restaurant_tables
+            WHERE is_active = 0
+            ORDER BY id ASC
+            `
+        );
+
+        return res.status(200).json(tables);
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Unable to load inactive tables",
+        });
+    }
+}
+
+async function reactivateTable(req, res) {
+    const { id } = req.params;
+
+    try {
+        const result = await dbRun(
+            `
+            UPDATE restaurant_tables
+            SET is_active = 1
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                message: "Table not found",
+            });
+        }
+
+        const reactivatedTable = await dbGet(
+            `
+            SELECT
+                id,
+                table_number,
+                capacity,
+                table_location,
+                is_active
+            FROM restaurant_tables
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        return res.status(200).json({
+            message: "Table reactivated successfully",
+            table: reactivatedTable,
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Unable to reactivate table",
         });
     }
 }
@@ -180,8 +261,10 @@ async function getAvailableTables(req, res) {
 
 module.exports = {
     getTables,
+    getInactiveTables,
     getAvailableTables,
     createTable,
     updateTable,
     deleteTable,
+    reactivateTable,
 };
