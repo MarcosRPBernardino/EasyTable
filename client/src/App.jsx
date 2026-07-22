@@ -4,6 +4,7 @@ import PublicBookingPage from "./pages/PublicBookingPage";
 import ManagerLoginPage from "./pages/ManagerLoginPage";
 import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import TableManagementPage from "./pages/TableManagementPage";
+import CalendarPage from "./pages/CalendarPage";
 
 import "./App.css";
 
@@ -12,12 +13,10 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<PublicBookingPage />} />
-
                 <Route
                     path="/manager/login"
                     element={<ManagerLoginPage />}
                 />
-
                 <Route
                     path="/manager/dashboard"
                     element={<ManagerDashboardPage />}
@@ -25,6 +24,10 @@ function App() {
                 <Route
                     path="/manager/tables"
                     element={<TableManagementPage />}
+                />
+                <Route
+                    path="/manager/calendar"
+                    element={<CalendarPage />}
                 />
             </Routes>
         </BrowserRouter>

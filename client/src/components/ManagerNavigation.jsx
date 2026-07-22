@@ -36,7 +36,16 @@ function ManagerNavigation() {
                     >
                         Reservations
                     </NavLink>
-
+                    <NavLink
+                        to="/manager/calendar"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "manager-navigation-link active"
+                                : "manager-navigation-link"
+                        }
+                    >
+                        Calendar
+                    </NavLink>
                     <NavLink
                         to="/manager/tables"
                         className={({ isActive }) =>
@@ -92,7 +101,16 @@ function ManagerNavigation() {
                 >
                     Reservations
                 </NavLink>
-
+                <NavLink
+                    to="/manager/calendar"
+                    className={({ isActive }) =>
+                        isActive
+                            ? "manager-mobile-link active"
+                            : "manager-mobile-link"
+                    }
+                >
+                    Calendar
+                </NavLink>
                 <NavLink
                     to="/manager/tables"
                     className={({ isActive }) =>
